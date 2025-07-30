@@ -1,0 +1,7 @@
+ - [x]ingests (+ vector store manager and chromaDB)
+ - [x]orechestrator
+ - [ ]rag
+ - [ ]summary
+ - [ ]webtool
+ - 
+ - 

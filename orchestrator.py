@@ -59,7 +59,6 @@ class OrchestratorAgent():
         """
         Process the input question and orchestrate the response workflow
         """
-        # self.receive_message(message)
         self.message_history.append(message)
 
         # Orchestrator system prompt
@@ -90,10 +89,11 @@ class OrchestratorAgent():
             temperature=0
         )
 
-        print(response)
+        # print(response)
 
         # create action plan ?
         if response.choices[0].message.function_call:
+            print("Orchestrator received function call and decided to use :", response.choices[0].message.function_call.name)
             function_call = response.choices[0].message.function_call
             function_name = function_call.name
             function_args = json.loads(function_call.arguments)
@@ -106,7 +106,4 @@ class OrchestratorAgent():
 
             print(f"Action plan created: {action_plan}")
 
-
-
-test_agent = OrchestratorAgent(openai_api_key="")
-test_agent.process_message("What's the regulatory status of AI in medical devices?")
+            return action_plan

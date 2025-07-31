@@ -1,7 +1,12 @@
  - [x]ingests (+ vector store manager and chromaDB)
  - [x]orechestrator
- - [ ]rag
- - [ ]summary
+ - [x]rag
+ - [x]summary
  - [ ]webtool
- - 
+ - [ ]validation agent
+ - [~]hf model
+ - [ ]ollama model
+ - [ ]speed tests
+ - [ ]lawyer agent?
+ - [ ]country agent?
  - 

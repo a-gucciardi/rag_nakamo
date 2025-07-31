@@ -105,5 +105,6 @@ def ingest_regulatory_documents(data_directory = "./data", chroma_db_path = "./c
     print(f"Retrieved {len(test_results)} relevant documents.")
     print(f"Top result preview: {test_results[0].page_content[:200]}...")
 
-ingest_regulatory_documents()
+if __name__ == "__main__":
+    ingest_regulatory_documents()
 

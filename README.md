@@ -2,11 +2,11 @@
  - [x]orechestrator
  - [x]rag
  - [x]summary
- - [~]webtool (to add in workflow)
+ - [x]webtool (added after workflow)
  - [x]validation agent
- - [x]hf model (orchestrator)
- - [x]ollama model (orchestrator)
+ - [x]hf model (orchestrator+response+val)
+ - [x]ollama model (orchestrator+response+val)
  - [ ]speed tests
  - [ ]lawyer agent?
  - [ ]country agent?
- - [ ]UI choice
+ - [x]UI choice

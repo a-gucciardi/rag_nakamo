@@ -6,8 +6,28 @@ class ResponseAgent():
     Uses LLM to synthesize information and format responses with proper citations.
     """
 
-    def __init__(self, openai_api_key):
-        self.client = OpenAI(api_key=openai_api_key)
+    def __init__(self, client="OpenAI", openai_api_key=None, hf_model="google/gemma-3-4b-it", ollama_model="llama3.1:8b"):
+        self.client_type = client
+        if client == "OpenAI":
+            self.client = OpenAI(api_key=openai_api_key)
+
+        elif client == "HF":
+            from transformers import AutoTokenizer, Gemma3ForConditionalGeneration
+            import torch, os
+            os.environ['TRANSFORMERS_VERBOSITY'] = 'error'
+
+            self.model = Gemma3ForConditionalGeneration.from_pretrained(
+                hf_model, 
+                device_map="auto", 
+                torch_dtype=torch.bfloat16,
+                attn_implementation="eager"
+            ).eval()
+            self.tokenizer = AutoTokenizer.from_pretrained(hf_model)
+
+        elif client == "Ollama":
+            import ollama
+            self.ollama_model = ollama_model
+            self.ollama = ollama
         self.message_history = []
 
     def process_message(self, message):
@@ -66,7 +86,8 @@ class ResponseAgent():
         Please provide a comprehensive, structured answer based on the regulatory documents provided above."""
 
         # final response
-        response = self.client.chat.completions.create(
+        if self.client_type == "OpenAI":
+            response = self.client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {"role": "system", "content": system_prompt},
@@ -75,8 +96,26 @@ class ResponseAgent():
                 temperature=0.3,
                 max_tokens=1500
             )
+            structured_response = response.choices[0].message.content
 
-        structured_response = response.choices[0].message.content
+        elif self.client_type == "HF":
+            import torch
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+                ]
+            text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
+            with torch.inference_mode():
+                outputs = self.model.generate(**inputs, max_new_tokens=1500, do_sample=False)
+            structured_response = self.tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True)
+
+        elif self.client_type == "Ollama":
+            response = self.ollama.chat(model=self.ollama_model, messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ])
+            structured_response = response['message']['content']
 
         # we add source list at the end
         return structured_response + source_list

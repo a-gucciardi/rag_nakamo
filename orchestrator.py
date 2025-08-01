@@ -95,6 +95,7 @@ class OrchestratorAgent():
         You should:
         1. First use the RAG agent to search for relevant information in FDA and WHO regulatory documents.
         2. Then use the Response agent to format the final answer
+        3. If the question is not related to regulations or FDA and WHO, return an error message
 
         Analyze the user's question and determine the appropriate workflow."""
 

@@ -7,10 +7,12 @@ class OrchestratorAgent():
     Uses LLM function calling to determine the appropriate action plan.
     """
 
-    def __init__(self, client="OpenAI", openai_api_key=None, hf_model="google/gemma-3-4b-it"):
+    def __init__(self, client="OpenAI", openai_api_key=None, hf_model="google/gemma-3-4b-it", ollama_model="llama3.1:8b"):
         self.client_type = client
+
         if client == "OpenAI":
             self.client = OpenAI(api_key=openai_api_key)
+
         elif client == "HF":
             from transformers import AutoTokenizer, Gemma3ForConditionalGeneration
             import torch, os
@@ -22,8 +24,13 @@ class OrchestratorAgent():
                 torch_dtype=torch.bfloat16,
                 attn_implementation="eager"
             ).eval()
-
             self.tokenizer = AutoTokenizer.from_pretrained(hf_model)
+
+        elif client == "Ollama":
+            import ollama
+            self.ollama_model = ollama_model
+            self.ollama = ollama
+
         self.available_functions = {
             "use_rag_agent": {
                 "name": "use_rag_agent",
@@ -68,6 +75,7 @@ class OrchestratorAgent():
                 }
             }
         }
+
         self.message_history = []
 
     def process_message(self, message):
@@ -76,7 +84,6 @@ class OrchestratorAgent():
         """
         self.message_history.append(message)
 
-        # Orchestrator system prompt
         system_prompt = """
         You are an orchestrator for a medtech regulatory assistant system. 
         Your job is to analyze regulatory questions and decide which agents to use and in what order.
@@ -102,7 +109,6 @@ class OrchestratorAgent():
                 function_call="auto",
                 temperature=0
             )
-
             if response.choices[0].message.function_call:
                 function_call = response.choices[0].message.function_call
                 function_name = function_call.name
@@ -117,9 +123,6 @@ class OrchestratorAgent():
 
         elif self.client_type == "HF":
             import torch
-            # Simple prompt for HuggingFace - just decide between RAG or response
-            # prompt = f"Question: {message}\n\nThis is a regulatory question. Should I first search documents (RAG) or generate a response? Answer with either 'use_rag_agent' or 'generate_response'."
-
             messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Regulatory question: {message}"}
@@ -133,7 +136,6 @@ class OrchestratorAgent():
             response_text = self.tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True)
             print(f"Response from HuggingFace model: {response_text}")
 
-            # replace decision logic
             if "rag agent" in response_text.lower():
                 return {
                     "function": "use_rag_agent",
@@ -147,5 +149,28 @@ class OrchestratorAgent():
                     "original_question": message
                 }
 
-        # error handling TODO
+        elif self.client_type == "Ollama":
+            full_prompt = f"""{system_prompt}
+            Regulatory question: {message}
+            Which agent should be used first? Respond with "use_rag_agent" or "generate_response" only.
+            """
+            response = self.ollama.chat(model=self.ollama_model, messages=[
+                {"role": "user", "content": full_prompt}
+            ])
+            reply = response['message']['content'].strip().lower()
+            print(f"Response from Ollama: {reply}")
+
+            if "rag" in reply:
+                return {
+                    "function": "use_rag_agent",
+                    "arguments": {"query": message},
+                    "original_question": message
+                }
+            else:
+                return {
+                    "function": "generate_response",
+                    "arguments": {"question": message, "retrieved_info": "", "sources": []},
+                    "original_question": message
+                }
+
         return None

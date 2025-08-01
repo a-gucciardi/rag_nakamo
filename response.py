@@ -50,10 +50,10 @@ class ResponseAgent():
         7. Compare FDA vs WHO approaches when relevant
 
         RESPONSE STRUCTURE:
-        - Executive Summary (brief overview)
-        - Detailed Analysis (main content with citations)
-        - Key Requirements/Standards (if applicable)
-        - Sources (list all referenced documents)
+        - ## Executive Summary (brief overview)
+        - ## Detailed Analysis (main content with citations)
+        - ## Key Requirements/Standards (if applicable)
+        - ## Sources (list all referenced documents)
 
         Use citation format: [Source Name, Page X] after each major point."""
 

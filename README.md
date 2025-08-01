@@ -3,8 +3,8 @@
  - [x]rag
  - [x]summary
  - [ ]webtool
- - [ ]validation agent
- - [~]hf model
+ - [x]validation agent
+ - [x]hf model (orchestrator)
  - [ ]ollama model
  - [ ]speed tests
  - [ ]lawyer agent?

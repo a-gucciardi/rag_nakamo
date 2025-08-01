@@ -1,5 +1,5 @@
-import json
 from openai import OpenAI
+import json
 
 class OrchestratorAgent():
     """
@@ -7,8 +7,23 @@ class OrchestratorAgent():
     Uses LLM function calling to determine the appropriate action plan.
     """
 
-    def __init__(self, openai_api_key):
-        self.client = OpenAI(api_key=openai_api_key)
+    def __init__(self, client="OpenAI", openai_api_key=None, hf_model="google/gemma-3-4b-it"):
+        self.client_type = client
+        if client == "OpenAI":
+            self.client = OpenAI(api_key=openai_api_key)
+        elif client == "HF":
+            from transformers import AutoTokenizer, Gemma3ForConditionalGeneration
+            import torch, os
+            os.environ['TRANSFORMERS_VERBOSITY'] = 'error'
+
+            self.model = Gemma3ForConditionalGeneration.from_pretrained(
+                hf_model, 
+                device_map="auto", 
+                torch_dtype=torch.bfloat16,
+                attn_implementation="eager"
+            ).eval()
+
+            self.tokenizer = AutoTokenizer.from_pretrained(hf_model)
         self.available_functions = {
             "use_rag_agent": {
                 "name": "use_rag_agent",
@@ -76,34 +91,61 @@ class OrchestratorAgent():
 
         Analyze the user's question and determine the appropriate workflow."""
 
+        if self.client_type == "OpenAI":
+            response = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Regulatory question: {message}"}
+                ],
+                functions=[func for func in self.available_functions.values()],
+                function_call="auto",
+                temperature=0
+            )
 
-        # allows to use the function calls
-        response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
+            if response.choices[0].message.function_call:
+                function_call = response.choices[0].message.function_call
+                function_name = function_call.name
+                function_args = json.loads(function_call.arguments)
+
+                action_plan = {
+                    "function": function_name,
+                    "arguments": function_args,
+                    "original_question": message
+                }
+                return action_plan
+
+        elif self.client_type == "HF":
+            import torch
+            # Simple prompt for HuggingFace - just decide between RAG or response
+            # prompt = f"Question: {message}\n\nThis is a regulatory question. Should I first search documents (RAG) or generate a response? Answer with either 'use_rag_agent' or 'generate_response'."
+
+            messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": f"Regulatory question: {message}"}
-            ],
-            functions=[func for func in self.available_functions.values()],
-            function_call="auto",
-            temperature=0
-        )
+                ]
+            text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            inputs = self.tokenizer(text, return_tensors="pt").to(self.model.device)
 
-        # print(response)
+            with torch.inference_mode():
+                outputs = self.model.generate(**inputs, max_new_tokens=50, do_sample=False)
 
-        # create action plan ?
-        if response.choices[0].message.function_call:
-            print("Orchestrator received function call and decided to use :", response.choices[0].message.function_call.name)
-            function_call = response.choices[0].message.function_call
-            function_name = function_call.name
-            function_args = json.loads(function_call.arguments)
+            response_text = self.tokenizer.decode(outputs[0][inputs["input_ids"].shape[-1]:], skip_special_tokens=True)
+            print(f"Response from HuggingFace model: {response_text}")
 
-            action_plan = {
-                "function": function_name,
-                "arguments": function_args,
-                "original_question": message
-            }
+            # replace decision logic
+            if "rag agent" in response_text.lower():
+                return {
+                    "function": "use_rag_agent",
+                    "arguments": {"query": message},
+                    "original_question": message
+                }
+            else:
+                return {
+                    "function": "generate_response", 
+                    "arguments": {"question": message, "retrieved_info": "", "sources": []},
+                    "original_question": message
+                }
 
-            print(f"Action plan created: {action_plan}")
-
-            return action_plan
+        # error handling TODO
+        return None

@@ -65,12 +65,16 @@ class RAGAgent():
         for i, doc in enumerate(docs):
             source = doc.metadata.get("source", "")
             doctype = "fda" if "fda" in source.lower() else "who" if "who" in source.lower() else "other"
+            # if doc.metadata.get("score") is not None:
+            #     relevance_score = doc.metadata.get("score")
+            # else:
+            #     relevance_score = 0.0
             result = {
                 "rank": i + 1,
                 "content": doc.page_content,
                 "source": doc.metadata.get("source", "Unknown"),
                 "page": doc.metadata.get("page", "Unknown"),
-                "relevance_score": doc.metadata.get("score", 0.0),
+                # "relevance_score": relevance_score,
                 "document_type": doctype,
             }
             results.append(result)

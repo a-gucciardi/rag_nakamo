@@ -89,11 +89,11 @@ class OrchestratorAgent():
         Your job is to analyze regulatory questions and decide which agents to use and in what order.
 
         Available agents: 
-        1. RAG Agent: Searches regulatory PDFs for relevant information
+        1. RAG Agent: Searches regulatory of both FDA and WHO PDFs for relevant information
         2. Response Agent: Creates structured final answers with citations
 
         You should:
-        1. First use the RAG agent to search for relevant information
+        1. First use the RAG agent to search for relevant information in FDA and WHO regulatory documents.
         2. Then use the Response agent to format the final answer
 
         Analyze the user's question and determine the appropriate workflow."""

@@ -24,10 +24,3 @@ def google_search(query, api_key, search_engine_id, num_results=10):
     response = requests.get(url, params=params)
     response.raise_for_status()
     return response.json().get("items", [])
-
-# Example usage (replace with your actual API key and Search Engine ID):
-api_key = "AIzaSyCazrlL9XMtAgauwrF9zSITH8Ax0bFwQwI"
-search_engine_id = "715f6ddbfb51f4d07"
-results = google_search("Regulatory in Medtech", api_key, search_engine_id)
-for result in results:
-    print(result["title"], result["link"])

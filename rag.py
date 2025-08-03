@@ -8,11 +8,11 @@ class RAGAgent():
     def __init__(self, chroma_db_path: str = "./chroma_db"):
         self.message_history = []
         self.chroma_db_path = chroma_db_path
-        self.embeddings = RegulatoryEmbeddings()
         self.retriever = get_vector_store_retriever(
-            embeddings=self.embeddings,
+            embeddings=RegulatoryEmbeddings(),
             chroma_db_path=self.chroma_db_path,
-            collection_name="regulatory_documents"
+            collection_name="regulatory_documents",
+            search_kwargs={"k": 5}  # Default to top 5 results
         )
 
     def process_message(self, message):

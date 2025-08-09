@@ -20,7 +20,8 @@ rag_agent = RAGAgent(chroma_db_path="./chroma_db")
 rep_agent = ResponseAgent(openai_api_key=openai_api_key)
 val_agent = ValidationAgent(openai_api_key=openai_api_key)
 
-query = st.text_input("Enter your query:", "Compare FDA and WHO approaches to risk management for medical devices")
+# What are the design control requirements for verificationand validation?
+query = st.text_input("Enter your query:", "Is our AI-powered MRI analysis tool considered a medical device software?")
 
 if st.button("Submit"):
     tab1, tab2 = st.tabs(["Final Answer", "Intermediate Results"])

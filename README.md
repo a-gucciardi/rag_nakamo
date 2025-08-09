@@ -94,3 +94,14 @@ Search engine : https://programmablesearchengine.google.com/controlpanel/create
  - [ ]speed tests
  - [ ]lawyer agent?
  - [ ]country agent?
+
+## UPGRADE
+Given genereal dissatisfaction and previous lack of time for the project, I want to improve several things : 
+
+ - Improve modular separations : agents/tools/data/storage/interface
+ - Add logging viewer for constant monitoring
+ - Change testing strategy, have a serious one
+ - Continuous integration and vulnerability tests  
+ - optimize RAG, change from chunking strategy + retrieval evaluations
+ - prepare for extension, new agents or LLMS
+ - strengthen security (research TODO)

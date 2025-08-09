@@ -1,11 +1,10 @@
 from orchestrator import OrchestratorAgent
 from rag import RAGAgent
 
-
 with open("openai_api_key.txt", "r") as file:
     openai_api_key = file.read().strip()
 
-test_agent = OrchestratorAgent(openai_api_key="openai_api_key")
+test_agent = OrchestratorAgent(openai_api_key=openai_api_key)
 # test_agent = OrchestratorAgent(openai_api_key="")
 action_plan = test_agent.process_message("What's the regulatory status of AI in medical devices?")
 

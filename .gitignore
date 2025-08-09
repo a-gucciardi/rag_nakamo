@@ -1,3 +1,7 @@
 __pycache__/
 chroma_db/
 prompts/
+
+tree.txt
+archive/google_config.txt
+archive/openai_api_key.txt

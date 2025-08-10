@@ -31,3 +31,11 @@ Next, to address the copy-pasted agent and redundancy, we create a base agent.
 First done and tested with orchestrator. OK
 With the actual model running. OK
 Added pretty logging.  OK
+
+Next and before RAG Agent : isolate retrieval & context assembly. Subtasks:
+ - Create vectorstore/ with chroma_manager.py and ingest.py OK
+ - change naive test splitting to semantic chunking OK
+ - improve ingest : sections, quality analysis, adaptive sizing
+ - toggle rerank option, placeholder ?
+
+

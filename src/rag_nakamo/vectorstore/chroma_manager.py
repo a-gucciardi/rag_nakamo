@@ -25,10 +25,10 @@ def get_vector_store_retriever(
     embeddings,
     chroma_db_path="./chroma_db",
     collection_name="regulatory_documents",
-    search_kwargs=None
+    search_kwargs={"k": 5}
 ):
-    if search_kwargs is None:
-        search_kwargs = {"k": 5}
+    # if search_kwargs is None:
+    #     search_kwargs = {"k": 5}
 
     persistent_client = chromadb.PersistentClient(path=chroma_db_path)
 

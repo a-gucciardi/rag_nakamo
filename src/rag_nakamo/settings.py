@@ -18,7 +18,8 @@ class Settings(BaseSettings):
     validation_model: str = "gpt-4o-mini"
 
     # DB
-    chroma_persist_dir: str = ".chroma"
+    chroma_db_path: str = "chroma_db"
+    chroma_collection_name: str = "regulatory_documents"
     max_context_tokens: int = 10000 # limit ?
     retrieval_top_k: int = 5
     # if we use ensemble retrieval, we will rerank the top k results

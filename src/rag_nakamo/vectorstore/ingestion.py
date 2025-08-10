@@ -72,30 +72,10 @@ def test_retrieval(embeddings, chroma_db_path):
             print(f"Top result from: {top_result.metadata.get('source', 'unknown')}")
             print(f"Preview: {top_result.page_content[:150]}...")
 
-# def main(data_dir="data/"):
-#     print("Starting document processing...")
-    
-#     # Initialize semantic chunker
-#     settings = get_settings()
-#     embeddings = OpenAIEmbeddings(api_key=settings.openai_api_key)
-#     chunker = SemanticChunker(embeddings, breakpoint_threshold_type="percentile")
-    
-#     # Load and process documents
-#     documents = load_pdfs(data_dir)
-#     print(f"Loaded total of {len(documents)} pages from {data_dir}")
-#     chunks = chunk_documents(documents, chunker)
-    
-#     # Show results
-#     analyze_chunks(chunks)
-    
-#     print("\nFirst chunk preview:")
-#     print(chunks[0].page_content[:200] + "...")
-
-
 def main(data_dir="data/", chroma_db_path="./chroma_db"):
     print("Starting document processing...")
     settings = get_settings()
-    embeddings = OpenAIEmbeddings(api_key=settings.openai_api_key)
+    embeddings = OpenAIEmbeddings(api_key=settings.openai_api_key, model="text-embedding-3-large")
     # semantic chunker
     chunker = SemanticChunker(embeddings, breakpoint_threshold_type="percentile") #
 
@@ -124,5 +104,4 @@ def main(data_dir="data/", chroma_db_path="./chroma_db"):
 
 if __name__ == "__main__":
     # Use absolute path to ensure we find the files
-    # data_path = os.path.join(os.path.dirname(__file__), "data/")
     main()

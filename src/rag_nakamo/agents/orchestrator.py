@@ -25,7 +25,7 @@ class OrchestratorAgent(BaseAgent):
                     "properties": {
                         "query": {
                             "type": "string",
-                            "description": "The search query to find relevant regulatory information"
+                            "description": "The input search query to find relevant regulatory information"
                         },
                         "focus_areas": {
                             "type": "array",
@@ -60,6 +60,20 @@ class OrchestratorAgent(BaseAgent):
                 }
             }
         }
+        self.system_prompt = """
+        You are an orchestrator for a medtech regulatory assistant system. 
+        Your job is to analyze regulatory questions and decide which agents to use and in what order.
+
+        Available agents: 
+        1. RAG Agent: Searches regulatory of both FDA and WHO PDFs for relevant information
+        2. Response Agent: Creates structured final answers with citations
+
+        You should:
+        1. First use the RAG agent to search for relevant information in FDA and WHO regulatory documents.
+        2. Then use the Response agent to format the final answer
+        3. If the question is not related to regulations or FDA and WHO, return an error message
+
+        Analyze the user's question and determine the appropriate workflow."""
         logger.info(f"Orchestrator initialized with model: {self.model}")
     
     def process_message(self, query: str):
@@ -69,7 +83,7 @@ class OrchestratorAgent(BaseAgent):
         response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": "Say hi to the user and ask for their regulatory question."},
+                    {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": f"Regulatory question: {query}"}
                 ],
                 functions=[func for func in self.available_functions.values()],

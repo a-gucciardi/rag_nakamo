@@ -35,7 +35,8 @@ Added pretty logging.  OK
 Next and before RAG Agent : isolate retrieval & context assembly. Subtasks:
  - Create vectorstore/ with chroma_manager.py and ingest.py OK
  - change naive test splitting to semantic chunking OK
- - improve ingest : sections, quality analysis, adaptive sizing
- - toggle rerank option, placeholder ?
+ - improve ingest : sections, quality analysis, adaptive sizing OK~ (with chuncks + semantic)
+ - toggle rerank option, placeholder ? NO
+ - relevance score OK with similarity_search_with_score
 
 

@@ -5,3 +5,5 @@ prompts/
 tree.txt
 archive/google_config.txt
 archive/openai_api_key.txt
+
+src/.env

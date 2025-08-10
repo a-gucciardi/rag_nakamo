@@ -4,6 +4,9 @@ from functools import lru_cache
 from typing import Optional, Literal
 
 class Settings(BaseSettings):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        print(f"Loading API from .env file: {bool(self.openai_api_key)}")
     environment: Literal["dev", "test", "prod"] = "dev"
     log_level: str = "INFO"
 

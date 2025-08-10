@@ -28,3 +28,6 @@ Biggest issues this addresses are :
  - fragile env setup.
 
 Next, to address the copy-pasted agent and redundancy, we create a base agent.  
+First done and tested with orchestrator. OK
+With the actual model running. OK
+Added pretty logging.  OK

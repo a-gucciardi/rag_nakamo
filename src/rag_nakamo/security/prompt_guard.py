@@ -16,6 +16,7 @@ class PromptGuard:
         self.client = OpenAI(api_key=self.settings.openai_api_key)
         self.model = self.settings.guard_model
         self.max_context_chars = max_context_chars
+        logger.info(f"PromptGuard initialized with model: {self.model}")
 
     def _build_context_snippet(self, docs: List[Dict[str, Any]]):
         """

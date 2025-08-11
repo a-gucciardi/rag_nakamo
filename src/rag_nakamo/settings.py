@@ -15,13 +15,14 @@ class Settings(BaseSettings):
     model_provider: Literal["openai", "huggingface", "ollama"] = "openai"
     orchestrator_model: str = "gpt-4o-mini" # now default
     response_model: str = "gpt-4o-mini"
-    validation_model: str = "gpt-4o-mini"
+    # validation_model: str = "gpt-4o-mini"
     # security
     guard_model: str = "gpt-4o-mini"
     sanitize: bool = True #
     # DB
     chroma_db_path: str = "chroma_db"
     chroma_collection_name: str = "regulatory_documents"
+    embeddings_model: str = "text-embedding-3-large"
     max_context_tokens: int = 10000 # limit ?
     retrieval_top_k: int = 5
     # if we use ensemble retrieval, we will rerank the top k results

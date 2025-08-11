@@ -49,7 +49,9 @@ Core idea for prompt_guard.py, largely inspired from https://github.com/bogdan01
  - Normalize / validate with Pydantic schemas. for prompt and response harm check OK
  - Decide outcome: allow | block | sanitize (safe message if blocked) OK
  - Return answer and a decision object. OK 
- - To test after a response agent, curren is only dummy ~
+ - To test after a response agent, curren is only dummy OK
+  - adrressed : latencies, the guarding is now only done after the final validation. OK
 
-Always apply sanitize before passing docs to response agent.
+Since we have the minimum requirement now, it's all about the UI and coordinating the options. 
+
 

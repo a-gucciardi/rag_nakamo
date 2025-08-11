@@ -6,19 +6,22 @@ from langchain_openai.embeddings import OpenAIEmbeddings
 from sentence_transformers import CrossEncoder
 import logging, json, time
 
+logger = logging.getLogger(__name__)
+
 class RAGAgent(BaseAgent):
-    def __init__(self, name: str, description: str = ""):
+    def __init__(self, name: str, description: str):
         super().__init__(name, description)
         self.settings = get_settings()
         self.client = OpenAI(api_key=self.settings.openai_api_key)
         self.client_type = "OpenAI"
-        self.embeddings = OpenAIEmbeddings(api_key=self.settings.openai_api_key, model="text-embedding-3-large")
+        self.embeddings = OpenAIEmbeddings(api_key=self.settings.openai_api_key, model=self.settings.embeddings_model)
         self.retriever = get_vector_store_retriever(
             embeddings=self.embeddings,
             chroma_db_path=self.settings.chroma_db_path,
             search_kwargs={"k": self.settings.retrieval_top_k}
         )
         self.reranker = CrossEncoder(self.settings.rerank_model)
+        logger.info(f"RAG initialized with embeddings: {self.settings.embeddings_model}, reranker: {self.settings.enable_rerank} {self.settings.rerank_model}, retrieval_top_k: {self.settings.retrieval_top_k}")
 
     def process_message(self, query: str, focus_areas: list = None):
         """ Here query is the action plan from orchestrator """

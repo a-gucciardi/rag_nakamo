@@ -26,10 +26,13 @@ def main():
     
     # 2. RAG Agent
     rag_agent = RAGAgent(name="RAG Agent", description="Retrieval-Augmented Generation Agent")
-    retrieval = rag_agent.process_message(action_plan)
-    logger.info(f"Retrieved information: {retrieval[0]}")
-    logger.info(f"Retrieved information: {retrieval[1]['relevance_score']:.4f} for {retrieval[1]['source']} at page {retrieval[1]['page']}")
-    logger.info(f"Retrieved information: {retrieval[2]['relevance_score']:.4f} for {retrieval[2]['source']} at page {retrieval[2]['page']}") # Distance = 0: Perfect match
+    retrieval, duration = rag_agent.timed(action_plan)
+    logger.info(f"RAG retrieved {len(retrieval)} sources in {duration:.2f} seconds.")
+    if settings.enable_rerank:
+        logger.info(f"Reranking enabled. Top {settings.rerank_top_k} results after reranking. Model: {settings.rerank_model}")
+    for i in retrieval[:1]:
+        # print(i)
+        logger.info(f"{i['relevance_score']:.4f} for {i['source']} at page {i['page']}: {i['content'][:200]}[...]")  # Log first 100 chars
 
 if __name__ == "__main__":
     setup_logging()

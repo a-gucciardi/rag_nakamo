@@ -36,7 +36,19 @@ Next and before RAG Agent : isolate retrieval & context assembly. Subtasks:
  - Create vectorstore/ with chroma_manager.py and ingest.py OK
  - change naive test splitting to semantic chunking OK
  - improve ingest : sections, quality analysis, adaptive sizing OK~ (with chuncks + semantic)
- - toggle rerank option, placeholder ? NO
  - relevance score OK with similarity_search_with_score
+ - toggle rerank option, model choice ? OK
+-> problem with reranking : it only refines existing results, add latency for minimal gains
+ - Ensemble RAG : TODO
 
+SECURITY SAFETY PHASE: 
+Needs to independently protect the output
+ - Added security/prompt_guard.py with sanitize_retrieved_text().
+Core idea for prompt_guard.py, largely inspired from https://github.com/bogdan01m/security-rag/tree/main/services/sec_rag/llm:
+ - Accept the raw RAG agent answer.
+ - Normalize / validate.
+ - Decide outcome: allow | block | sanitize (safe message if blocked)
+ - Return a decision object.
+
+Always apply sanitize before passing docs to response agent.
 

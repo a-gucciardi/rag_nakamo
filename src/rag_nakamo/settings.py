@@ -23,8 +23,9 @@ class Settings(BaseSettings):
     max_context_tokens: int = 10000 # limit ?
     retrieval_top_k: int = 5
     # if we use ensemble retrieval, we will rerank the top k results
-    # enable_rerank: bool = True
-    # rerank_top_k: int = 3
+    enable_rerank: bool = False
+    rerank_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    rerank_top_k: int = 3
 
     # WEB
     google_api_key: Optional[str] = Field(default=None, env="GOOGLE_API_KEY")

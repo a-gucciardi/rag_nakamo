@@ -16,7 +16,9 @@ class Settings(BaseSettings):
     orchestrator_model: str = "gpt-4o-mini" # now default
     response_model: str = "gpt-4o-mini"
     validation_model: str = "gpt-4o-mini"
-
+    # security
+    guard_model: str = "gpt-4o-mini"
+    sanitize: bool = True #
     # DB
     chroma_db_path: str = "chroma_db"
     chroma_collection_name: str = "regulatory_documents"

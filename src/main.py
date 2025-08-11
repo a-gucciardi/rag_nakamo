@@ -3,6 +3,11 @@ from rag_nakamo.agents.base import BaseAgent
 from rag_nakamo.agents.orchestrator import OrchestratorAgent
 from rag_nakamo.agents.rag import RAGAgent
 from rag_nakamo.logger_config import setup_logging
+from rag_nakamo.security.prompt_guard import PromptGuard
+from rag_nakamo.security.schemas import ClassificationResult
+import logging, os
+
+logger = logging.getLogger(__name__)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -33,6 +38,33 @@ def main():
     for i in retrieval[:1]:
         # print(i)
         logger.info(f"{i['relevance_score']:.4f} for {i['source']} at page {i['page']}: {i['content'][:200]}[...]")  # Log first 100 chars
+
+    # 3. Prompt Guard
+    logger.info("Running prompt guard safety checks...")
+    prompt_guard = PromptGuard()
+    context_snippet = prompt_guard._build_context_snippet(retrieval)
+    logger.info(f"Context snippet for safety check: OK") #
+    # safety classification
+    guard_response = prompt_guard._call_classifier(
+        user_prompt=query,
+        model_response=retrieval[0],  # Use first retrieved document as draft answer
+        context_docs=retrieval  # pass retrieved docs for context   
+    )
+    logger.info(f"Guard response: {guard_response}")
+    classification = ClassificationResult(
+            prompt_harm_label=guard_response.get("prompt_harm_label","harmful"),
+            response_refusal_label=guard_response.get("response_refusal_label","compliance"),
+            response_harm_label=guard_response.get("response_harm_label","harmful"),
+        )
+    decision = prompt_guard._decide(classification)
+    logger.info(f"Guard decision: {decision.status} - {decision.reason}")
+
+    guarded_response = prompt_guard.classify_and_decide(
+        user_prompt=query,
+        draft_answer=retrieval[0]['content'],  # Use first retrieved document as draft answer
+        context_docs=retrieval  # pass retrieved docs for context
+    )
+    logger.info(f"Guarded complete response: {guarded_response.final_answer}")
 
 if __name__ == "__main__":
     setup_logging()

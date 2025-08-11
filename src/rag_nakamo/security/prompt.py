@@ -19,5 +19,8 @@ User Prompt:
 
 Base Model Response (may be empty or partial):
 {model_response}
+
+Context snippet (top retrieved docs):
+{context_snippet}
 """
 )

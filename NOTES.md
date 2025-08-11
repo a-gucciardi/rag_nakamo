@@ -45,10 +45,11 @@ SECURITY SAFETY PHASE:
 Needs to independently protect the output
  - Added security/prompt_guard.py with sanitize_retrieved_text().
 Core idea for prompt_guard.py, largely inspired from https://github.com/bogdan01m/security-rag/tree/main/services/sec_rag/llm:
- - Accept the raw RAG agent answer.
- - Normalize / validate.
- - Decide outcome: allow | block | sanitize (safe message if blocked)
- - Return a decision object.
+ - Accept the raw RAG agent answer OK.
+ - Normalize / validate with Pydantic schemas. for prompt and response harm check OK
+ - Decide outcome: allow | block | sanitize (safe message if blocked) OK
+ - Return answer and a decision object. OK 
+ - To test after a response agent, curren is only dummy ~
 
 Always apply sanitize before passing docs to response agent.
 

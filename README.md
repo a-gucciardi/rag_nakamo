@@ -10,6 +10,7 @@ A RAG (Retrieval-Augmented Generation) system specialized for medical device reg
  - prepare for extension, new agents or LLMS
  - smart orchestrator sample, to replace old sequential workflow
  - see [NOTES](./NOTES.md) for more detailed steps of improvements
+ - german language [report](./report/report_DEU.md)
 
 <div align="center">
   <img src="./data/compact_cropped.png" alt="workflow" width="900"/>
@@ -30,6 +31,9 @@ ___
 
 **demo runs .mp4**
 See [demo1](./demos/main2_compressed.mp4) and [demo2](./demos/main_compressed.mp4). 
+
+**Tech report**
+Available in [german](./report)
 
 ## Quick Start
 

@@ -1,107 +1,173 @@
-# RAG Nakamo
+# RAG Nakamo - Regulatory Intelligence System
 
-- **Multi-agent architecture**:  Specialized agents for orchestrating tasks, retrieving data, generating responses, and validating outputs.
-- **ChromaDB**: Efficient database querying for relevant information.
-- **Integration with external APIs**: Uses stander OpenAI and Google APIs for advanced processing and search capabilities.
-- **LLM flexibility**: OpenAI, Hugginface, Ollama. 
-- **Agent Tests**
+A RAG (Retrieval-Augmented Generation) system specialized for medical device regulatory documents, with intelligent orchestration and security features.
+
+**V2.1 UPGRADE**  
+ - Improved pythonic modular separations : agents/security/data/vectorstore/settings/scripts
+ - Added new logging viewer for constant monitoring
+ - Changed prompt guarding strategy, for robust prompt security
+ - optimized RAG, change from chunking strategy + retrieval evaluations
+ - prepare for extension, new agents or LLMS
+ - smart orchestrator sample, to replace old sequential workflow
+ - see [NOTES](./NOTES.md) for more detailed steps of improvements
 
 <div align="center">
-  <img src="./img/workflow.png" alt="workflow" width="500"/>
+  <img src="./data/compact_cropped.png" alt="workflow" width="900"/>
 </div>
 
+___
 
-## Overview
-Python-based application designed to process queries related to medical device regulations. It leverages multiple agents to generate, validate, and enhance responses using external APIs and databases. The application is structured to perform the following steps:
+## Features
 
-1. **Generate an action plan** using the `OrchestratorAgent`.
-2. **Process the action plan** and query a database using the `RAGAgent`.
-3. **Generate a response** using the `ResponseAgent`.
-4. **Validate the response** using the `ValidationAgent`.
-5. **Perform a web search** for additional information using Google Search.
+- 🎭 **Smart Orchestrator**: Actually decide whether to use RAG based on query type
+- 📚 **Document Search**: Vector-based search across FDA and WHO regulatory documents  
+- 🛡️ **Security Guard**: Validates and secures responses before delivery
+- 🔄 **Multi-agent architecture**: Specialized agents for orchestrating tasks, retrieving data, generating responses, and validating outputs
+- **ChromaDB**: Efficient database querying for relevant information
+- **Integration with external APIs**: Uses standard OpenAI and Google APIs for advanced processing and search capabilities
+- **LLM flexibility**: OpenAI, Huggingface, Ollama support
+- ⚡ **Performance Tracking**: Built-in timing and logging for all operations
 
+## Quick Start
 
-## Installation
+### Prerequisites
 
-1. Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-     ```
-2. Set up API keys:
-   - Add your OpenAI API key to `openai_api_key.txt`.
-   - Add your Google API key and CX to `google_config.txt` (one per line).
+- Python 3.10+
+- Conda (recommended)
+- OpenAI API key
+
+### Installation with conda
+
+1. **Clone the repository and activate conda**
+   ```bash
+   git clone <your-repo-url>
+   cd rag_nakamo
+   conda create -n rags python=3.10
+   conda activate rags
+   pip install -r requirements.txt
+   ```
+
+2. **Set up environment variables**
+   
+   Create a `.env` file in the `src/` directory (this file should NEVER be committed to git):
+   ```bash
+   cd src/
+   cp .env.example .env 
+   ```
+
+   Edit the `.env` file and add your OpenAI API key:
+   ```env
+   OPENAI_API_KEY=sk-your-openai-api-key-here
+   ```
+
+3. **Prepare document database**
+
+   Place your regulatory documents (PDFs) in the `src/data/` directory, then run:
+   ```bash
+   cd src/
+   python3 rag_nakamo/vectorstore/ingestion.py
+   ```
+   This will create a src/chroma_db vector store, used by the RAG agent. 
+
+#### Getting Your OpenAI API Key
+
+1. Go to [OpenAI's website](https://platform.openai.com/)
+2. Sign up or log in to your account
+3. Navigate to the API keys section
+4. Create a new API key
+5. Copy the key and paste it in your `.env` file
 
 ## Usage
 
-Command line:
-1. Run the main script (Enter query or modify the default query in `main.py`)
-    ```bash
-    python main.py
-    ```
-2. Run the web app
-    ```bash
-    streamlit run app.py
-    ```
+The system provides two main entry points:
 
-## File Structure
+### 1. Original Implementation (main.py)
+Traditional sequential execution: Orchestrator → RAG → Response → Security Guard
 
-- `main.py`: Main script for running the whole workflow.
-- `orchestrator.py`: Contains the `OrchestratorAgent` class for generating action plans.
-- `rag.py`: Implements the `RAGAgent` class for database querying.
-- `response.py`: Defines the `ResponseAgent` class for generating responses.
-- `validation.py`: Includes the `ValidationAgent` class for validating responses.
-- `web_search.py`: Provides Google Search integration (experimental).
-- `chroma_db/`: Contains the ChromaDB database files.
-- `tests/`: Includes test scripts for various components.
+```bash
+cd src/
+python main.py
+```
 
-## Testing
+### 2. Smart Orchestrator (main2_1.py) - **RECOMMENDED**
+Intelligent workflow with decision-making: Query Analysis → Conditional RAG → Response → Conditional Security
 
-Run the *_test* scripts to validate the functionality of individual components (requires the API setup)
+```bash
+cd src/
+python main2_1.py
+```
 
+### 3. Coming up : **UI** and model choice (unprioritized)
 
-## Main inspiration and notes
+### Example Queries
 
-Using function calling for the orchestrator :  
-https://huggingface.co/docs/hugs/guides/function-calling  
-Allows the orchestrator LLM to actually choose.  
+**Regulatory queries** (will use RAG):
+- "What are FDA software validation requirements?"
+- "How do medical device regulations work?"
+- "Compare FDA and WHO design control processes"
 
-Create chat completion  
-https://platform.openai.com/docs/api-reference/chat/create  
-Currently being replaced by Responses.  
-
-Rag:
-Chroma, parsing and sorting. 
-https://www.datacamp.com/tutorial/chromadb-tutorial-step-by-step-guide. 
-
-<!-- Focus areas from orchestrator used to format. Need good explanation on params of available functions.  -->
+**Non-regulatory queries** (will skip RAG):
+- "What is the weather today?"
+- "How do I cook pasta?"
 
 
-Web search : 
-Google cloud console 
-https://developers.google.com/custom-search/v1/overview
-Search engine : https://programmablesearchengine.google.com/controlpanel/create
+## Project Structure
 
-### My todos
- - [x]ingests (+ vector store manager and chromaDB)
- - [x]orchestrator
- - [x]rag
- - [x]summary
- - [x]webtool (added after workflow)
- - [x]validation agent
- - [x]hf model (orchestrator+response+val)
- - [x]ollama model (orchestrator+response+val)
- - [x]UI choice
- - [ ]speed tests
- - [ ]lawyer agent?
- - [ ]country agent?
+```
+rag_nakamo/
+├── src/
+│   ├── rag_nakamo/              # Main package
+│   │   ├── agents/              # Agent implementations
+│   │   │   ├── orchestrator.py  # Original orchestrator
+│   │   │   ├── new_orch.py      # Smart orchestrator (v2.1)
+│   │   │   ├── rag.py           # RAG agent
+│   │   │   └── response.py      # Response agent
+│   │   ├── security/            # Security components
+│   │   │   ├── prompt_guard.py  # Response validation
+│   │   │   └── schemas.py       # Security schemas
+│   │   ├── vectorstore/         # Vector database
+│   │   │   └── chroma_manager.py
+│   │   ├── settings.py          # Configuration
+│   │   └── logger_config.py     # Logging setup
+│   ├── data/                    # Your PDF documents
+│   ├── chroma_db/               # Vector database (auto-created)
+│   ├── main.py                  # Original implementation
+│   ├── main2_1.py               # Smart orchestrator demo
+│   └── .env                     # Your API keys (DO NOT COMMIT)
+└── README.md
+```
 
-## UPGRADE
-Given genereal dissatisfaction and previous lack of time for the project, I want to improve several things : 
+__
+## Additional info
+### Configuration
 
- - Improve modular separations : agents/tools/data/storage/interface
- - Add logging viewer for constant monitoring
- - Change testing strategy, have a serious one
- - Continuous integration and vulnerability tests  
- - optimize RAG, change from chunking strategy + retrieval evaluations
- - prepare for extension, new agents or LLMS
- - strengthen security (research TODO)
+The system is configured via `src/rag_nakamo/settings.py`. Key settings:
+
+- `orchestrator_model`: Model for orchestration decisions (default: gpt-4o-mini)
+- `response_model`: Model for response generation (default: gpt-4o-mini)
+- `retrieval_top_k`: Number of documents to retrieve (default: 5)
+- `enable_rerank`: Whether to rerank search results (default: False)
+
+### Security Features
+
+The system includes a security layer that:
+
+1. **Validates prompts** for harmful content
+2. **Checks responses** for compliance and safety  
+3. **Makes decisions** to allow, block, or sanitize content
+4. **Provides explanations** for security decisions
+
+### Development
+
+#### Adding New Agents
+
+1. Inherit from `BaseAgent` in `rag_nakamo/agents/base.py`
+2. Implement `process_message()` method
+3. Register with the orchestrator using `register_agent()`
+
+### Version History
+
+- **v2.1**: Smart Orchestrator with decision-making capabilities
+- **v2.0**: Completely rewriten Agents. Security integration with PromptGuard
+- **v1.0**: Basic RAG system with sequential agents
+<!-- 5. **Perform a web search** for additional information using Google Search. -->

@@ -28,6 +28,9 @@ ___
 - **LLM flexibility**: OpenAI, Huggingface, Ollama support
 - ⚡ **Performance Tracking**: Built-in timing and logging for all operations
 
+**demo runs .mp4**
+See [demo1](./demos/main2_compressed.mp4) and [demo2](./demos/main_compressed.mp4). 
+
 ## Quick Start
 
 ### Prerequisites

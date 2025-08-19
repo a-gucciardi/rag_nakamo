@@ -1,7 +1,6 @@
-import re
-import json
-import logging
-from typing import List, Dict, Any, Tuple, Optional
+import re, json
+import logging, time
+from typing import List, Dict, Any
 from openai import OpenAI
 from rag_nakamo.settings import get_settings
 from rag_nakamo.agents.base import BaseAgent
@@ -73,3 +72,11 @@ class ResponseAgent(BaseAgent):
         formatted_answer = response.choices[0].message.content.strip()
         logger.info("Formatted answer using LLM regulatory prompt")
         return formatted_answer
+    
+    def timed(self, query: str, content):
+        """Rewriten for content arg"""
+        start = time.perf_counter()
+        result = self.process_message(query, content)
+        duration = time.perf_counter() - start
+
+        return result, duration

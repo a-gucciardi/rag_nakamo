@@ -54,4 +54,16 @@ Core idea for prompt_guard.py, largely inspired from https://github.com/bogdan01
 
 Since we have the minimum requirement now, it's all about the UI and coordinating the options. 
 
+V2.1 before UI : have orchestrator actually orchestrate.
+implementation OK:
+ - SimpleOrchestrator in agents/new_orch.py that makes actual decisions OK
+ - Implements basic intelligence OK (checks if query is regulatory-related via keyword matching)
+ - Decision logic: regulatory queries → use RAG search, non-regulatory → skip RAG OK  
+   - Actually executes registered RAG and Response agents instead of just planning
+ - Tested with both regulatory ("FDA software validation") and non-regulatory ("weather") queries OK
+ - Agent registration system allows easy addition/removal of (new) agents OK
 
+Simple workflow in 2.1 is : Query → Decision → RAG (conditional) → Response → PromptGuard → Result OK
+Key improvement: transforms orchestrator from "action plan generator" to "intelligent workflow executor"
+
+Next: UI implementation to expose orchestration capabilities to users.  
